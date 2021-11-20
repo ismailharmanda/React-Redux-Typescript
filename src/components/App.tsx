@@ -1,18 +1,35 @@
 import React, { useState } from "react";
-interface AppProps {}
+import { connect } from "react-redux";
+import { Todo, fetchTodos } from "../actions";
+import { StoreState } from "../reducers";
 
-const App: React.FC<AppProps> = (): JSX.Element => {
-  const [counter, setCounter] = useState(0);
-
-  const onIncrement = (): void => {
-    setCounter((prev) => prev + 1);
+interface AppProps {
+  todos: Todo[];
+  fetchTodos(): any;
+}
+class _App extends React.Component<AppProps> {
+  onButtonClick = (): void => {
+    this.props.fetchTodos();
   };
 
-  const onDecrement = (): void => {
-    setCounter((prev) => prev - 1);
+  renderList = (): JSX.Element[] => {
+    return this.props.todos.map((todo: Todo) => {
+      return <div key={todo.id}>{todo.title}</div>;
+    });
   };
 
-  return <div>Hi there!</div>;
+  render() {
+    return (
+      <div>
+        <button onClick={this.onButtonClick}>Fetch</button>
+        {this.renderList()}
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = (state: StoreState): { todos: Todo[] } => {
+  return { todos: state.todos };
 };
 
-export default App;
+export const App = connect(mapStateToProps, { fetchTodos })(_App);
